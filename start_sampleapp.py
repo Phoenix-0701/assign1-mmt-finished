@@ -37,6 +37,7 @@ def hello(headers, body):
     print(f"[SampleApp] ['PUT'] Hello in {headers} to {body}")
     return {"status": "hello_called", "headers": str(headers), "body": body}
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Backend', description='', epilog='Beckend daemon')
     parser.add_argument('--server-ip', default='0.0.0.0')

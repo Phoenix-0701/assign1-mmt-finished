@@ -68,6 +68,35 @@ def get_list(headers, body):
     
     return {"status": "success", "peers": peer_list}
 
+@app.route('/logout', methods=['POST'])
+def logout(headers, body):
+    """
+    API để một peer thông báo rằng mình đã thoát (quit).
+    Server sẽ xóa peer này khỏi peer_list.
+    """
+    print(f"[ChatServer] Nhận yêu cầu /logout...")
+    
+    try:
+        # Tệp httpadapter.py đã chuyển body thành chuỗi
+        data = json.loads(body)
+        peer_id = data.get("username")
+        
+        # Kiểm tra xem peer có trong danh sách không
+        if peer_id in peer_list:
+            del peer_list[peer_id] # Xóa peer khỏi danh sách
+            print(f"[ChatServer] Peer đã thoát: {peer_id}. Danh sách còn lại {len(peer_list)} peers.")
+            return {"status": "logged_out", "peer_id": peer_id}
+        else:
+            print(f"[ChatServer] Peer {peer_id} yêu cầu logout nhưng không có trong danh sách.")
+            return {"status": "error", "message": "Peer not found"}
+            
+    except json.JSONDecodeError:
+        print("[ChatServer] Lỗi: Body /logout không phải là JSON hợp lệ")
+        return {"status": "error", "message": "Invalid JSON body"}
+    except Exception as e:
+        print(f"[ChatServer] Lỗi /logout không xác định: {e}")
+        return {"status": "error", "message": str(e)}
+
 # --- Khối khởi chạy máy chủ ---
 if __name__ == "__main__":
     """
