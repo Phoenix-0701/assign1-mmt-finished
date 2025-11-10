@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat with Peer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #chat-container {
+            width: 400px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #peer-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #messages {
+            height: 300px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        #input-area {
+            display: flex;
+        }
+        #message-input {
+            flex: 1;
+            padding: 5px;
+        }
+        #send-btn {
+            padding: 5px 10px;
+            margin-left: 5px;
+        }
+        .message {
+            margin-bottom: 5px;
+        }
+        .message b {
+            color: #333;
+        }
+        .message small {
+            color: #888;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="peer-header">
+            Chat with: <span id="peerName">Peer</span>
+        </div>
+
+        <div id="messages"></div>
+
+        <div id="input-area">
+            <input id="message-input" type="text" placeholder="Type message...">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+<script src="chat.js"></script>
+</body>
+</html>

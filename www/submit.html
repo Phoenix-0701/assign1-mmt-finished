@@ -1,0 +1,181 @@
+<!-- <h1>Submit</h1>
+<form id="submitForm" method="POST" action="/submit-info">
+  IP: <input name="ip" type="text"><br>
+  Port: <input name="port" type="text"><br>
+  <input type="submit" value="Submit">
+  <div id="errorMsg"></div>
+</form> -->
+
+<!-- <script>
+document.getElementById('submitForm').addEventListener('submit', async function(e) {
+    e.preventDefault(); // chặn reload page
+
+    const ip = this.ip.value;
+    const port = this.port.value;
+    const errorDiv = document.getElementById('errorMsg');
+
+    try {
+        // POST dữ liệu dạng form-urlencoded
+        const postResp = await fetch('/submit-info', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({ ip, port })  // dạng key=value&key=value
+        });
+
+        // đọc response
+        const postData = await postResp.json();
+        console.log("[Debug] POST response:", postData);
+
+        if (!postResp.ok) {
+            errorDiv.textContent = postData.message || 'Submit failed';
+            return;
+        }
+
+        // POST thành công → redirect tới GET list
+        const getResp = await fetch('/active-peers');
+        if (!getResp.ok) throw new Error('Failed to fetch list');
+
+        const data = await getResp.text(); // hoặc .json() nếu trả JSON
+        console.log('Peer list:', data);
+
+        // 3. Redirect sau khi GET xong
+        window.location.href = '/active-peers';
+    } catch (err) {
+        console.error(err);
+        errorDiv.textContent = 'Error: ' + err.message;
+    }
+});
+</script> -->
+
+<!-- <script>
+document.getElementById('submitForm').addEventListener('submit', async function(e) {
+    e.preventDefault(); // chặn reload page
+
+    const ip = this.ip.value;
+    const port = this.port.value;
+    const errorDiv = document.getElementById('errorMsg');
+
+    try {
+        // POST dữ liệu dạng form-urlencoded
+        const postResp = await fetch('/submit-info', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({ ip, port })  // key=value&key=value
+        });
+
+        const postData = await postResp.json();
+        console.log("[Debug] POST response:", postData);
+
+        if (!postResp.ok) {
+            errorDiv.textContent = postData.message || 'Submit failed';
+            return;
+        }
+
+        // POST thành công → redirect peer sang chính nó
+        window.location.href = `http://${ip}:${port}/active-peers`;
+
+    } catch (err) {
+        console.error(err);
+        errorDiv.textContent = 'Error: ' + err.message;
+    }
+});
+</script> -->
+<!-- <h1>Submit Your Info</h1>
+<form id="submitForm">
+  IP: <input name="ip" type="text" required><br>
+  Port: <input name="port" type="text" required><br>
+  <input type="submit" value="Submit">
+  <div id="errorMsg" style="color:red;"></div>
+</form>
+
+<script>
+document.getElementById('submitForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+
+    const ip = this.ip.value;
+    const port = this.port.value;
+    const errorDiv = document.getElementById('errorMsg');
+
+    try {
+        const resp = await fetch('/submit-info', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({ ip, port })
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+            errorDiv.textContent = data.message || 'Submit failed';
+            return;
+        }
+
+        // Lưu tracker IP/Port (giả sử tracker đang chạy ở trang hiện tại)
+        localStorage.setItem("trackerIP", window.location.hostname);
+        localStorage.setItem("trackerPort", window.location.port || "9000");
+
+        // Lưu peer IP/Port
+        localStorage.setItem("peerIP", ip);
+        localStorage.setItem("peerPort", port);
+
+        // Redirect sang peer server (peer_ip:peer_port)
+        const peerUrl = `http://${ip}:${port}/active-peers`;
+        window.location.href = peerUrl;
+
+    } catch(err) {
+        console.error(err);
+        errorDiv.textContent = 'Error: ' + err.message;
+    }
+});
+</script> -->
+<h1>Submit Your Info</h1>
+<form id="submitForm">
+  IP: <input name="ip" type="text" required><br>
+  Port: <input name="port" type="text" required><br>
+  <input type="submit" value="Submit">
+  <div id="errorMsg" style="color:red;"></div>
+</form>
+
+<script>
+document.getElementById('submitForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+
+    const ip = this.ip.value;
+    const port = this.port.value;
+    const errorDiv = document.getElementById('errorMsg');
+
+    try {
+        // 1. Gửi peer info đến tracker
+        const trackerResp = await fetch('/submit-info', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({ ip, port })
+        });
+        const trackerData = await trackerResp.json();
+
+        if (!trackerResp.ok) {
+            errorDiv.textContent = trackerData.message || 'Submit failed';
+            return;
+        }
+
+        // 2. Lấy tracker IP/Port hiện tại
+        const tracker_ip = window.location.hostname;
+        const tracker_port = window.location.port || "9000";
+        await fetch('/save-tracker', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                trackerIP: window.location.hostname,
+                trackerPort: window.location.port || "9000"
+            })
+        });
+
+        // 3. Redirect sang peer server (peer_ip:peer_port)
+        const peerUrl = `http://${ip}:${port}/view-my-channels`;
+        window.location.href = peerUrl;
+
+    } catch(err) {
+        console.error(err);
+        errorDiv.textContent = 'Error: ' + err.message;
+    }
+});
+</script>
+
