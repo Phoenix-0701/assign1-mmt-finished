@@ -19,6 +19,7 @@ request settings (cookies, auth, proxies).
 """
 from .dictionary import CaseInsensitiveDict
 import json as json_lib
+from urllib.parse import urlparse, parse_qs 
 
 class Request():
     """The fully mutable "class" `Request <Request>` object,
@@ -47,6 +48,7 @@ class Request():
         "body",
         "routes",
         "hook",
+        "query_params" ,
     ]
 
     def __init__(self):
@@ -66,17 +68,31 @@ class Request():
         self.routes = {}
         #: Hook point for routed mapped-path
         self.hook = None
+        #: Dictionary chứa các tham số query string từ URL (ví dụ ?user=Alice&peer=Bob)
+        self.query_params = {} 
+        
 
     def extract_request_line(self, request):
         try:
             lines = request.splitlines()
             first_line = lines[0]
-            method, path, version = first_line.split()
+            method, raw_path, version = first_line.split()
+
+            parsed = urlparse(raw_path)
+            path = parsed.path
 
             if path == '/':
                 path = '/index.html'
+            
+            self.query_params = {
+                k: v[0] if len(v) == 1 else v
+                for k, v in parse_qs(parsed.query).items()
+            }
+
         except Exception:
             return None, None
+        
+
 
         return method, path, version
              

@@ -48,6 +48,7 @@ from daemon import create_proxy
 PROXY_PORT = 8080
 
 
+
 def parse_virtual_hosts(config_file):
     """
     Parses virtual host blocks from a config file.
